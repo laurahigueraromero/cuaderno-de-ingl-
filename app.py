@@ -44,7 +44,7 @@ with tab_palabras:
             col1.write(word)
             col2.write(translate)
             if col3.button("Eliminar", key=f"del_word_{id_}"):
-                cuaderno.eliminar_palabra(word)
+                cuaderno.eliminar_palabra(id_)
                 st.rerun()
     else:
         st.info("No hay palabras guardadas.")
@@ -69,7 +69,7 @@ with tab_conceptos:
             col1.write(concepto)
             col2.write(definicion)
             if col3.button("Eliminar", key=f"del_concepto_{id_}"):
-                conceptos.eliminar_concepto(concepto)
+                conceptos.eliminar_concepto(id_)
                 st.rerun()
     else:
         st.info("No hay conceptos guardados.")

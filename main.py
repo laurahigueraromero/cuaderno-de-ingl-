@@ -1,10 +1,5 @@
-import sqlite3
-import os
-from dotenv import load_dotenv
 from cuaderno import Cuaderno
 from conceptos import Conceptos
-
-load_dotenv()
 
 
 def menu_palabras(cuaderno):
@@ -27,7 +22,7 @@ def menu_palabras(cuaderno):
             if palabras:
                 print("\nPalabras en el cuaderno:")
                 for palabra in palabras:
-                    print(f"{palabra[1]} - {palabra[2]}")
+                    print(f"[{palabra[0]}] {palabra[1]} - {palabra[2]}")
             else:
                 print("No hay palabras en el cuaderno.")
         elif opcion == "3":
@@ -35,10 +30,13 @@ def menu_palabras(cuaderno):
             if palabras:
                 print("\nPalabras en el cuaderno:")
                 for palabra in palabras:
-                    print(f"{palabra[1]} - {palabra[2]}")
-                word = input("Ingrese la palabra a eliminar: ")
-                cuaderno.eliminar_palabra(word)
-                print(f"Palabra '{word}' eliminada con éxito.")
+                    print(f"[{palabra[0]}] {palabra[1]} - {palabra[2]}")
+                try:
+                    id_del = int(input("Ingrese el ID de la palabra a eliminar: "))
+                    cuaderno.eliminar_palabra(id_del)
+                    print("Palabra eliminada con éxito.")
+                except ValueError:
+                    print("ID no válido.")
             else:
                 print("No hay palabras en el cuaderno.")
         elif opcion == "4":
@@ -67,7 +65,7 @@ def menu_conceptos(conceptos):
             if lista:
                 print("\nConceptos guardados:")
                 for c in lista:
-                    print(f"{c[1]} - {c[2]}")
+                    print(f"[{c[0]}] {c[1]} - {c[2]}")
             else:
                 print("No hay conceptos guardados.")
         elif opcion == "3":
@@ -75,10 +73,13 @@ def menu_conceptos(conceptos):
             if lista:
                 print("\nConceptos guardados:")
                 for c in lista:
-                    print(f"{c[1]} - {c[2]}")
-                concepto = input("Ingrese el concepto a eliminar: ")
-                conceptos.eliminar_concepto(concepto)
-                print(f"Concepto '{concepto}' eliminado con éxito.")
+                    print(f"[{c[0]}] {c[1]} - {c[2]}")
+                try:
+                    id_del = int(input("Ingrese el ID del concepto a eliminar: "))
+                    conceptos.eliminar_concepto(id_del)
+                    print("Concepto eliminado con éxito.")
+                except ValueError:
+                    print("ID no válido.")
             else:
                 print("No hay conceptos guardados.")
         elif opcion == "4":

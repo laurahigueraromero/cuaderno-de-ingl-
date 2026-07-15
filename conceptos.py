@@ -31,7 +31,7 @@ class Conceptos:
         crear_tabla()
 
     def _exportar_txt(self):
-        with open(self.txt_path, "w") as f:
+        with open(self.txt_path, "w", encoding="utf-8") as f:
             for c in self.obtener_conceptos():
                 f.write(f"{c[1]} - {c[2]}\n")
 
@@ -42,8 +42,8 @@ class Conceptos:
     def obtener_conceptos(self):
         return listar_conceptos()
 
-    def eliminar_concepto(self, concepto):
+    def eliminar_concepto(self, id_):
         with sqlite3.connect(db_path) as conn:
-            conn.execute("DELETE FROM conceptos WHERE concepto = ?", (concepto,))
+            conn.execute("DELETE FROM conceptos WHERE id = ?", (id_,))
             conn.commit()
         self._exportar_txt()

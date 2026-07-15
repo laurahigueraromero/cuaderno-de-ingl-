@@ -31,7 +31,7 @@ class Cuaderno:
         crear_tabla()
 
     def _exportar_txt(self):
-        with open(self.txt_path, "w") as f:
+        with open(self.txt_path, "w", encoding="utf-8") as f:
             for palabra in self.obtener_palabras():
                 f.write(f"{palabra[1]} - {palabra[2]}\n")
 
@@ -42,8 +42,8 @@ class Cuaderno:
     def obtener_palabras(self):
         return listar_palabras()
 
-    def eliminar_palabra(self, word):
+    def eliminar_palabra(self, id_):
         with sqlite3.connect(db_path) as conn:
-            conn.execute("DELETE FROM cuaderno WHERE word = ?", (word,))
+            conn.execute("DELETE FROM cuaderno WHERE id = ?", (id_,))
             conn.commit()
         self._exportar_txt()
