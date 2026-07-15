@@ -1,0 +1,117 @@
+
+
+    st.set_page_config(page_title="Cuaderno de Inglés")
+
+- Es una función que SOLO configura metadatos de la página (no dibuja nada
+  visible dentro del cuerpo de la app). "page_title" es lo que aparece en
+  la pestaña del navegador (arriba del todo, donde normalmente ves el
+  nombre de la web) — sin esto, Streamlit pondría el nombre del archivo,
+  "app.py", como título por defecto.
+- Tiene otros parámetros opcionales que no usamos aquí, por ejemplo
+  page_icon (un emoji o imagen como favicon) o layout="wide" (para que la
+  app use todo el ancho de la pantalla en vez del ancho centrado angosto
+  por defecto).
+- Regla importante de Streamlit: si se usa, st.set_page_config() TIENE que
+  ser el primer comando de Streamlit que se ejecuta en el script (por eso
+  está en la línea 6, antes de crear cuaderno/conceptos y antes de
+  cualquier otro st.algo). Si pones otro st.* antes, Streamlit lanza un
+  error.
+
+
+
+
+    tab_palabras, tab_conceptos = st.tabs(["Palabras", "Conceptos"])
+
+st.tabs crea las dos pestañas navegables (el equivalente visual a los
+submenús "1. Palabras / 2. Conceptos" de main.py). "with tab_palabras:"
+significa "todo lo que va indentado aquí se dibuja dentro de esa pestaña".
+
+- st.tabs recibe una lista de strings (los nombres que se ven en cada
+  pestaña) y devuelve un objeto "contenedor" por cada nombre, en el mismo
+  orden — por eso "tab_palabras, tab_conceptos = st.tabs([...])" hace
+  asignación múltiple: la primera pestaña de la lista va a tab_palabras,
+  la segunda a tab_conceptos.
+- Cada tab_* es un contenedor especial que se usa con "with": todo lo que
+  esté indentado dentro de "with tab_palabras:" solo se dibuja cuando el
+  usuario tiene esa pestaña abierta. Es el mismo patrón que "with
+  sqlite3.connect(...) as conn:" en cuaderno.py — un bloque "with" que
+  agrupa código relacionado — pero aquí no se trata de abrir/cerrar un
+  recurso, sino de decirle a Streamlit "todo esto pertenece visualmente a
+  esta pestaña".
+- A diferencia del menú de main.py (que necesita que el usuario escriba
+  "1" o "2" y hay un bucle esperando esa respuesta), las pestañas de
+  Streamlit ya están todas "calculadas" en cada rerun — Streamlit decide
+  solo qué mostrar según cuál esté seleccionada, sin que tengas que
+  programar esa lógica de navegación.
+
+
+
+    with st.form("form_palabra", clear_on_submit=True):
+        word = st.text_input("Palabra")
+        translate = st.text_input("Traducción")
+        if st.form_submit_button("Agregar"):
+            ...
+
+st.form agrupa los dos campos de texto y el botón para que NO se reejecute
+el script en cada tecla — solo cuando se presiona "Agregar".
+clear_on_submit=True vacía los campos después de enviar. Dentro del "if",
+se repite la misma validación y llamada que había en main.py
+(cuaderno.agregar_palabra(word, translate)), pero en vez de print() se usa
+st.success() / st.warning(), que son cajitas de color en la página.
+
+- ¿Por qué hace falta st.form? Fuera de un form, CADA widget de Streamlit
+  (un text_input, un checkbox, etc.) dispara un rerun completo del script
+  apenas cambia su valor — por ejemplo, escribir una sola letra en un
+  st.text_input suelto ya volvería a ejecutar todo app.py de arriba a
+  abajo. Eso sería un desperdicio (y molesto) para un formulario de dos
+  campos: no queremos guardar la palabra hasta que el usuario termine de
+  escribir AMBOS campos y confirme. st.form agrupa los inputs para que
+  el rerun solo ocurra una vez, al presionar el botón de envío.
+- "form_palabra" (el primer argumento de st.form) es un identificador
+  único para ese formulario — Streamlit lo necesita para distinguir este
+  form de otros que pueda haber en la página (en este caso, del
+  "form_concepto" de la otra pestaña). Si dos forms tuvieran la misma
+  clave, Streamlit lanzaría un error.
+- clear_on_submit=True: por defecto, un form NO limpia sus campos después
+  de enviarse — el usuario vería la palabra que acaba de agregar seguir
+  escrita en el campo. Con este parámetro en True, apenas se agrega la
+  palabra, ambos campos (word y translate) quedan vacíos otra vez, listos
+  para la siguiente palabra.
+- st.text_input("Palabra") dibuja una caja de texto con la etiqueta
+  "Palabra" arriba, y devuelve como string lo que el usuario haya escrito
+  en ese momento (empieza como "" si no escribió nada). Es el equivalente
+  visual a "input("Ingrese la palabra: ")" en main.py, pero sin bloquear
+  la ejecución esperando una tecla Enter — el valor se lee en cada rerun.
+- st.form_submit_button("Agregar") es el ÚNICO tipo de botón permitido
+  dentro de un st.form (un st.button normal no funciona ahí dentro). Su
+  valor de retorno es True solo en el rerun inmediatamente posterior a
+  que se hizo clic en él — por eso el patrón "if st.form_submit_button(...):"
+  actúa como el "if opcion == '1':" de main.py: el código de adentro
+  (validar, guardar, mostrar mensaje) solo corre cuando efectivamente se
+  envió el formulario, no en cada rerun.
+
+
+4) Listar y eliminar (líneas 27-38)
+
+    palabras = cuaderno.obtener_palabras()
+    if palabras:
+        for id_, word, translate in palabras:
+            col1, col2, col3 = st.columns([3, 3, 1])
+            col1.write(word)
+            col2.write(translate)
+            if col3.button("Eliminar", key=f"del_word_{id_}"):
+                cuaderno.eliminar_palabra(word)
+                st.rerun()
+
+- obtener_palabras() trae la lista igual que en la versión de terminal.
+- st.columns([3, 3, 1]) divide el ancho en 3 columnas (proporciones 3:3:1)
+  para poner palabra / traducción / botón en fila.
+- Cada botón necesita un "key" único (f"del_word_{id_}") porque si dos
+  botones se llamaran igual, Streamlit no sabría distinguir cuál se apretó
+  — por eso se usa el id de la fila de la base de datos.
+- st.rerun() fuerza que el script se vuelva a correr desde el principio
+  inmediatamente después de borrar, así la tabla se refresca sola sin
+  recargar la página manualmente.
+
+El bloque de tab_conceptos (líneas 40-63) tiene exactamente la misma
+lógica, solo que usando "conceptos" en vez de "cuaderno".

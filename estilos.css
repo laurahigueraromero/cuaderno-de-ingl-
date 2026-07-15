@@ -1,0 +1,19 @@
+h1 {
+    color: #2c6e91 !important;
+}
+
+h2 {
+    color: #4a4a4a !important;
+    font-weight: normal !important;
+   
+}
+
+button[data-testid="stBaseButton-secondary"] {
+    border-radius: 8px !important;
+}
+
+button[data-testid="stBaseButton-secondaryFormSubmit"] {
+    background-color: #2c6e91 !important;
+    color: white !important;
+    border-radius: 8px !important;
+}
