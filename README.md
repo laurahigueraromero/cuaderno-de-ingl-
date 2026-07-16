@@ -5,6 +5,7 @@ Aplicación para guardar y gestionar vocabulario en inglés (palabras y su tradu
 ## Funcionalidades
 
 - Agregar, listar y eliminar **palabras** (palabra / traducción).
+- Buscar en traductor **palabras** y posibilidad de guardarla.
 - Agregar, listar y eliminar **conceptos** (concepto / definición).
 - Cada vez que se agrega o elimina un elemento, se exporta automáticamente a un `.txt` (`palabras.txt` y `conceptos.txt`), siempre sincronizado con la base de datos.
 - Dos formas de usar la app:
