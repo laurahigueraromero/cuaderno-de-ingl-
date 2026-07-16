@@ -1,0 +1,10 @@
+services:
+  cuaderno:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./cuaderno.db:/app/cuaderno.db
+      - ./conceptos.db:/app/conceptos.db
+      - ./palabras.txt:/app/palabras.txt
+      - ./conceptos.txt:/app/conceptos.txt
