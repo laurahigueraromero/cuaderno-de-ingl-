@@ -187,8 +187,10 @@ with tab_phrasal:
 # ==========================================
 # --- MODO ESTUDIO -------------------------
 # ==========================================
-st.divider()
+st.divider() #equivalente al hr de html
 st.subheader("Estudio de palabras y conceptos")
+
+# Inicialización de variables de sesión para el modo estudio
 
 if "estudio_activo" not in st.session_state:
     st.session_state.estudio_activo = False
