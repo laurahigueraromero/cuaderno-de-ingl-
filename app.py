@@ -182,3 +182,61 @@ with tab_phrasal:
         if st.session_state.ejemplo_actual:
             st.caption(f"*Ejemplo de uso:* {st.session_state.ejemplo_actual}")
         st.divider()
+
+
+# ==========================================
+# --- MODO ESTUDIO -------------------------
+# ==========================================
+st.divider()
+st.subheader("Estudio de palabras y conceptos")
+
+if "estudio_activo" not in st.session_state:
+    st.session_state.estudio_activo = False
+if "estudio_items" not in st.session_state:
+    st.session_state.estudio_items = []
+if "indice_actual" not in st.session_state:
+    st.session_state.indice_actual = 0
+if "mostrar_traduccion" not in st.session_state:
+    st.session_state.mostrar_traduccion = False
+
+def empezar_estudio():
+    items_palabras = [(w, t) for _, w, t in cuaderno.obtener_palabras()]
+    items_conceptos = [(c, d) for _, c, d in conceptos.obtener_conceptos()]
+    items = items_palabras + items_conceptos
+    random.shuffle(items)
+    st.session_state.estudio_items = items
+    st.session_state.indice_actual = 0
+    st.session_state.mostrar_traduccion = False
+    st.session_state.estudio_activo = True
+
+def revelar_traduccion():
+    st.session_state.mostrar_traduccion = True
+
+def siguiente_item():
+    st.session_state.indice_actual += 1
+    st.session_state.mostrar_traduccion = False
+
+def terminar_estudio():
+    st.session_state.estudio_activo = False
+
+if not st.session_state.estudio_activo:
+    st.button("📚 Empezar el estudio", on_click=empezar_estudio, type="primary")
+else:
+    items = st.session_state.estudio_items
+    if not items:
+        st.info("No hay palabras ni conceptos guardados para estudiar.")
+        st.button("Salir", on_click=terminar_estudio)
+    elif st.session_state.indice_actual >= len(items):
+        st.success("¡Has terminado el repaso!")
+        st.button("🔄 Volver a empezar", on_click=empezar_estudio, type="primary")
+        st.button("Salir", on_click=terminar_estudio)
+    else:
+        termino, definicion = items[st.session_state.indice_actual]
+        st.caption(f"{st.session_state.indice_actual + 1} de {len(items)}")
+        st.markdown(f"## {termino}")
+        if st.session_state.mostrar_traduccion:
+            st.write(f"**Traducción/Definición:** {definicion}")
+            st.button("Siguiente ➡️", on_click=siguiente_item, type="primary")
+        else:
+            st.button("👁️ Mostrar traducción", on_click=revelar_traduccion)
+        st.button("Salir del estudio", on_click=terminar_estudio)
